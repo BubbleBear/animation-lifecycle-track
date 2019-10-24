@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+        .box {
+            height: 50px;
+            width: 50px;
+        }
+    
+        .red {
+            background-color: red;
+        }
+    
+        .blue {
+            background-color: blue;
+        }
+    
+        .transition {
+            transition-delay: 0.1s;
+            transition-duration: 3s;
+            transition-property: background-color;
+            transition-timing-function: ease;
+        }
+    </style>
+<body>
+    <div class="transition red box"></div>
+    <br>
+    <div class="animation red box"></div>
+    <br>
+    <div class="transform red box"></div>
+</body>
+<script>
+    class EventEmitter {
+        constructor(element) {
+            this._element = element;
+        }
+
+        on(eventName, callback, ...options) {
+            this._element.addEventListener(eventName, callback, ...options);
+
+            return this;
+        }
+
+        once(eventName, callback) {
+            return this.on(eventName, callback, {
+                once: true,
+            });
+        }
+    }
+
+    async function untilTransitionEnds(element, timeout = 5000) {
+        return new Promise((resolve, reject) => {
+            new EventEmitter(element)
+                .once('transitionend', () => {
+                    console.log('transitionend', element);
+                    resolve(true);
+                })
+                .once('transitioncancel', () => {
+                    console.log('transitioncancel', element);
+                    resolve(false);
+                });
+
+            setTimeout(() => {
+                reject(new Error('timeout'));
+            }, timeout);
+        });
+    }
+</script>
+<script>
+    const transitionBox = document.querySelector('.transition');
+    const animationBox = document.querySelector('.animation');
+    const transformBox = document.querySelector('.transform');
+
+    setTimeout(async () => {
+        while (true) {
+            transitionBox.classList.toggle('red');
+            transitionBox.classList.toggle('blue');
+            await untilTransitionEnds(transitionBox);
+        }
+    });
+</script>
+</html>
