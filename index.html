@@ -4,35 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>testing page</title>
 </head>
 <style>
-        .box {
-            height: 50px;
-            width: 50px;
-        }
-    
-        .red {
-            background-color: red;
-        }
-    
-        .blue {
-            background-color: blue;
-        }
-    
-        .transition {
-            transition-delay: 0.1s;
-            transition-duration: 3s;
-            transition-property: background-color;
-            transition-timing-function: ease;
-        }
-    </style>
+    html, body {
+        height: 100%;
+    }
+
+    .wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .box {
+        height: 50px;
+        width: 50px;
+    }
+
+    .red {
+        background-color: red;
+    }
+
+    .blue {
+        background-color: blue;
+    }
+
+    .transition {
+        transition-delay: 0.1s;
+        transition-duration: 3s;
+        transition-property: background-color;
+        transition-timing-function: ease;
+    }
+</style>
 <body>
-    <div class="transition red box"></div>
-    <br>
-    <div class="animation red box"></div>
-    <br>
-    <div class="transform red box"></div>
+    <div class="wrapper">
+        <div class="transition red box"></div>
+        <br>
+        <div class="animation red box"></div>
+        <br>
+        <div class="transform red box"></div>
+    </div>
 </body>
 <script>
     class EventEmitter {
@@ -57,11 +71,9 @@
         return new Promise((resolve, reject) => {
             new EventEmitter(element)
                 .once('transitionend', () => {
-                    console.log('transitionend', element);
                     resolve(true);
                 })
                 .once('transitioncancel', () => {
-                    console.log('transitioncancel', element);
                     resolve(false);
                 });
 
@@ -70,18 +82,37 @@
             }, timeout);
         });
     }
+
+    async function nextTick(callback) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(callback());
+            }, 0);
+        });
+    }
 </script>
 <script>
     const transitionBox = document.querySelector('.transition');
     const animationBox = document.querySelector('.animation');
     const transformBox = document.querySelector('.transform');
 
+    const colorSwitch = (function (target) {
+        let src = 'red';
+        let dest = 'blue';
+
+        return function () {
+            return nextTick(() => {
+                target.classList.replace(src, dest);
+                [src, dest] = [dest, src];
+            });
+        }
+    })(transitionBox);
+
     setTimeout(async () => {
         while (true) {
-            transitionBox.classList.toggle('red');
-            transitionBox.classList.toggle('blue');
+            await colorSwitch();
             await untilTransitionEnds(transitionBox);
         }
-    });
+    }, 0);
 </script>
 </html>
