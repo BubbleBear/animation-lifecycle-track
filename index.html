@@ -38,14 +38,26 @@
         transition-property: background-color;
         transition-timing-function: ease;
     }
+
+    .animation {
+        animation-name: animation;
+        animation-duration: 2s;
+        animation-iteration-count: 2;
+        animation-direction: normal;
+        animation-fill-mode: both;
+        animation-play-state: running;
+    }
+
+    @keyframes animation {
+    }
 </style>
 <body>
     <div class="wrapper">
         <div class="transition red box"></div>
         <br>
-        <div class="animation red box"></div>
-        <br>
         <div class="transform red box"></div>
+        <br>
+        <div class="animation red box"></div>
     </div>
 </body>
 <script desc="timer">
@@ -173,8 +185,8 @@
 </script>
 <script desc="init">
     const transitionBox = document.querySelector('.transition');
-    const animationBox = document.querySelector('.animation');
     const transformBox = document.querySelector('.transform');
+    const animationBox = document.querySelector('.animation');
 </script>
 <script desc="transition">
     const colorSwitch = (function (target) {
@@ -196,8 +208,9 @@
         }
     }, 0);
 </script>
-<script desc="animation">
-</script>
 <script desc="transform">
+</script>
+<script desc="animation">
+    untilTransitionEnds(animationBox);
 </script>
 </html>
