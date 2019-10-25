@@ -48,7 +48,64 @@
         <div class="transform red box"></div>
     </div>
 </body>
-<script>
+<script desc="timer">
+    class Timer {
+        constructor(callback, timeout) {
+            this.callback = callback;
+            this.timeout = timeout;
+            this.stamp = Date.now();
+
+            this.schedule();
+        }
+
+        get paused() {
+            if (this._paused === undefined) {
+                this._paused = false;
+            }
+
+            return this._paused;
+        }
+
+        set paused(value) {
+            if (typeof value !== 'boolean') {
+                throw new TypeError('accepts only booleans');
+            }
+
+            if (this._paused === true) {
+                this.stamp = Date.now();
+            }
+
+            this._paused = value;
+        }
+
+        schedule() {
+            const stamp = Date.now();
+            const interval = stamp - this.stamp;
+
+            this.timeout -= interval;
+            this.stamp = stamp;
+
+            if (this.paused) {
+                clearTimeout(this.timer);
+            } else if(this.timeout > 0) {
+                this.timer = setTimeout(this.schedule.bind(this), this.timeout);
+            } else {
+                this.callback();
+            }
+        }
+
+        pause() {
+            this.paused = true;
+            this.schedule();
+        }
+
+        resume() {
+            this.paused = false;
+            this.schedule();
+        }
+    }
+</script>
+<script desc="event-emitter">
     class EventEmitter {
         constructor(element) {
             this._element = element;
@@ -66,18 +123,41 @@
             });
         }
     }
+</script>
+<script desc="event-names">
+    let hidden;
+    let visibilityChange;
 
+    if (document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support 
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+    } else if (document.msHidden !== undefined) {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+    } else if (document.webkitHidden !== undefined) {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+    }
+</script>
+<script desc="until">
     async function untilTransitionEnds(element, timeout = 5000) {
         return new Promise((resolve, reject) => {
             new EventEmitter(element)
                 .once('transitionend', () => {
                     resolve(true);
+                    timer.pause();
                 })
                 .once('transitioncancel', () => {
                     resolve(false);
+                    timer.pause();
                 });
 
-            setTimeout(() => {
+            new EventEmitter(document)
+                .on('visibilitychange', () => {
+                    document[hidden] && timer.pause() || timer.resume();
+                });
+
+            const timer = new Timer(() => {
                 reject(new Error('timeout'));
             }, timeout);
         });
@@ -91,11 +171,12 @@
         });
     }
 </script>
-<script>
+<script desc="init">
     const transitionBox = document.querySelector('.transition');
     const animationBox = document.querySelector('.animation');
     const transformBox = document.querySelector('.transform');
-
+</script>
+<script desc="transition">
     const colorSwitch = (function (target) {
         let src = 'red';
         let dest = 'blue';
@@ -111,8 +192,12 @@
     setTimeout(async () => {
         while (true) {
             await colorSwitch();
-            await untilTransitionEnds(transitionBox);
+            await untilTransitionEnds(transitionBox).catch(() => {});
         }
     }, 0);
+</script>
+<script desc="animation">
+</script>
+<script desc="transform">
 </script>
 </html>
