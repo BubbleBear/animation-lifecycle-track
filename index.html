@@ -203,7 +203,7 @@
 
     setTimeout(async () => {
         while (true) {
-            await colorSwitch();
+            colorSwitch();
             await untilTransitionEnds(transitionBox).catch(() => {});
         }
     }, 0);
@@ -211,6 +211,7 @@
 <script desc="transform">
 </script>
 <script desc="animation">
-    untilTransitionEnds(animationBox);
+</script>
+<script desc="test">
 </script>
 </html>
