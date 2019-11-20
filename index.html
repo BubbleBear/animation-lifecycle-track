@@ -60,83 +60,9 @@
         <div class="animation red box"></div>
     </div>
 </body>
-<script desc="timer">
-    class Timer {
-        constructor(callback, timeout) {
-            this.callback = callback;
-            this.timeout = timeout;
-            this.stamp = Date.now();
-
-            this.schedule();
-        }
-
-        get paused() {
-            if (this._paused === undefined) {
-                this._paused = false;
-            }
-
-            return this._paused;
-        }
-
-        set paused(value) {
-            if (typeof value !== 'boolean') {
-                throw new TypeError('accepts only booleans');
-            }
-
-            if (this._paused === true) {
-                this.stamp = Date.now();
-            }
-
-            this._paused = value;
-        }
-
-        schedule() {
-            const stamp = Date.now();
-            const interval = stamp - this.stamp;
-
-            this.timeout -= interval;
-            this.stamp = stamp;
-
-            if (this.paused) {
-                clearTimeout(this.timer);
-            } else if(this.timeout > 0) {
-                this.timer = setTimeout(this.schedule.bind(this), this.timeout);
-            } else {
-                this.callback();
-            }
-        }
-
-        pause() {
-            this.paused = true;
-            this.schedule();
-        }
-
-        resume() {
-            this.paused = false;
-            this.schedule();
-        }
-    }
-</script>
-<script desc="event-emitter">
-    class EventEmitter {
-        constructor(element) {
-            this._element = element;
-        }
-
-        on(eventName, callback, ...options) {
-            this._element.addEventListener(eventName, callback, ...options);
-
-            return this;
-        }
-
-        once(eventName, callback) {
-            return this.on(eventName, callback, {
-                once: true,
-            });
-        }
-    }
-</script>
-<script desc="event-names">
+<script id="timer" src="timer.js"></script>
+<script id="emitter" src="emitter.js"></script>
+<script id="event-names">
     let hidden;
     let visibilityChange;
 
@@ -151,7 +77,7 @@
         visibilityChange = "webkitvisibilitychange";
     }
 </script>
-<script desc="until">
+<script id="until">
     async function untilTransitionEnds(element, timeout = 5000) {
         return new Promise((resolve, reject) => {
             new EventEmitter(element)
@@ -183,12 +109,12 @@
         });
     }
 </script>
-<script desc="init">
+<script id="init">
     const transitionBox = document.querySelector('.transition');
     const transformBox = document.querySelector('.transform');
     const animationBox = document.querySelector('.animation');
 </script>
-<script desc="transition">
+<script id="transition">
     const colorSwitch = (function (target) {
         let src = 'red';
         let dest = 'blue';
@@ -201,12 +127,17 @@
         }
     })(transitionBox);
 
-    setTimeout(async () => {
-        while (true) {
-            colorSwitch();
-            await untilTransitionEnds(transitionBox).catch(() => {});
-        }
-    }, 0);
+    const timer = document.querySelector('#timer');
+    const emitter = document.querySelector('#emitter');
+
+    console.log(timer.async);
+
+    // (async () => {
+    //     while (true) {
+    //         colorSwitch();
+    //         await untilTransitionEnds(transitionBox).catch(() => {});
+    //     }
+    // })();
 </script>
 <script desc="transform">
 </script>
