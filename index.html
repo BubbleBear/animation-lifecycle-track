@@ -61,7 +61,7 @@
     </div>
 </body>
 <script id="timer" src="timer.js"></script>
-<script id="emitter" src="emitter.js"></script>
+<script id="event-emitter" src="event-emitter.js"></script>
 <script id="event-names">
     let hidden;
     let visibilityChange;
@@ -127,17 +127,12 @@
         }
     })(transitionBox);
 
-    const timer = document.querySelector('#timer');
-    const emitter = document.querySelector('#emitter');
-
-    console.log(timer.async);
-
-    // (async () => {
-    //     while (true) {
-    //         colorSwitch();
-    //         await untilTransitionEnds(transitionBox).catch(() => {});
-    //     }
-    // })();
+    (async () => {
+        while (true) {
+            colorSwitch();
+            await untilTransitionEnds(transitionBox);
+        }
+    })();
 </script>
 <script desc="transform">
 </script>

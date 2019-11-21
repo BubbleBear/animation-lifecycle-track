@@ -1,4 +1,4 @@
-class Emitter {
+class EventEmitter {
     constructor(element) {
         this._element = element;
     }
@@ -16,8 +16,8 @@ class Emitter {
     }
 }
 
-// try {
-//     module.exports = Emitter;
-// } catch (e) {
-//     console.log(e);
-// }
+try {
+    module.exports = EventEmitter;
+} catch (e) {
+    console.log(e);
+}

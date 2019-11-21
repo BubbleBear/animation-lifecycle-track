@@ -54,8 +54,8 @@ class Timer {
     }
 }
 
-// try {
-//     module.exports = Timer;
-// } catch (e) {
-//     console.log(e)
-// }
+try {
+    module.exports = Timer;
+} catch (e) {
+    console.log(e)
+}
