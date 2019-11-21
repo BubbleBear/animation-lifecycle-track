@@ -1,3 +1,5 @@
+'use strict';
+
 class Timer {
     constructor(callback, timeout) {
         this.callback = callback;
