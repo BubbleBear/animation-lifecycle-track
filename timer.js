@@ -36,8 +36,10 @@ class Timer {
         this.timeout -= interval;
         this.stamp = stamp;
 
+        clearTimeout(this.timer);
+
         if (this.paused) {
-            clearTimeout(this.timer);
+            return;
         } else if(this.timeout > 0) {
             this.timer = setTimeout(this.schedule.bind(this), this.timeout);
         } else {
