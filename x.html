@@ -85,24 +85,24 @@
                     resolve(true);
                     timer.pause();
                     elementEventTarget.destroy();
-                    // documentEventTarget.destroy();
+                    documentEventTarget.destroy();
                 });
 
             const documentEventTarget = new EventEmitter(document)
                 .on('visibilitychange', () => {
                     console.log('visibilitychange', document[hidden]);
 
-                    // if (document[hidden]) {
-                    //     timer.pause();
-                    // } else {
-                    //     timer.resume();
-                    // }
+                    if (document[hidden]) {
+                        timer.pause();
+                    } else {
+                        timer.resume();
+                    }
                 });
 
             const timer = new Timer(() => {
                 reject(new Error('timeout'));
                 elementEventTarget.destroy();
-                // documentEventTarget.destroy();
+                documentEventTarget.destroy();
             }, timeout);
         });
     }
