@@ -60,121 +60,13 @@
         <div class="animation red box"></div>
     </div>
 </body>
-<script id="timer" src="timer.js"></script>
-<script id="event-emitter" src="event-emitter.js"></script>
-<script id="event-names">
-    let hidden;
-    let visibilityChange;
 
-    if (document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support 
-        hidden = "hidden";
-        visibilityChange = "visibilitychange";
-    } else if (document.msHidden !== undefined) {
-        hidden = "msHidden";
-        visibilityChange = "msvisibilitychange";
-    } else if (document.webkitHidden !== undefined) {
-        hidden = "webkitHidden";
-        visibilityChange = "webkitvisibilitychange";
-    }
-</script>
-<script id="until">
-    async function untilTransitionEnds(element, timeout = 5000) {
-        return new Promise((resolve, reject) => {
-            const elementEventTarget = new EventEmitter(element)
-                .on('transitionend', () => {
-                    resolve(true);
-                    timer.pause();
-                    elementEventTarget.destroy();
-                    documentEventTarget.destroy();
-                })
-                .on('transitioncancel', () => {
-                    resolve(false);
-                    timer.pause();
-                    elementEventTarget.destroy();
-                    documentEventTarget.destroy();
-                });
-
-            const documentEventTarget = new EventEmitter(document)
-                .on('visibilitychange', () => {
-                    console.log('visibilitychange', document[hidden]);
-
-                    if (document[hidden]) {
-                        timer.pause();
-                    } else {
-                        timer.resume();
-                    }
-                });
-
-            const timer = new Timer(() => {
-                reject(new Error('timeout'));
-                elementEventTarget.destroy();
-                documentEventTarget.destroy();
-            }, timeout);
-        });
-    }
-
-    async function sleep(timeout) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, timeout);
-        });
-    }
-
-    async function nextTick(callback) {
-        await sleep(0);
-        return callback();
-    }
-</script>
-<script id="init">
-    const transitionBox = document.querySelector('.transition');
-    const transformBox = document.querySelector('.transform');
-    const animationBox = document.querySelector('.animation');
-</script>
-<script id="transition">
-    const colorSwitch = (function (target) {
-        let src = 'red';
-        let dest = 'blue';
-
-        return function () {
-            // start another transition in next tick to prevent cancelling ongoing transition
-            return nextTick(() => {
-                target.classList.replace(src, dest);
-                [src, dest] = [dest, src];
-            });
-        }
-    })(transitionBox);
-
-    (new EventEmitter(transitionBox))
-        .on('transitionrun', () => console.log('transitionrun'))
-        .on('transitionstrat', () => console.log('transitionstrat'))
-        .on('transitionend', () => console.log('transitionend'))
-        .on('transitioncancel', () => console.log('transitioncancel'));
-
-    // (async () => {
-    //     while (true) {
-    //         colorSwitch();
-    //         console.log(1)
-    //         await untilTransitionEnds(transitionBox);
-    //         console.log(2)
-    //     }
-    // })();
-
+<script>
     (async () => {
-        console.log(0)
-        colorSwitch();
-        await untilTransitionEnds(transitionBox);
-        console.log(1)
-        colorSwitch();
-        await untilTransitionEnds(transitionBox);
-        console.log(2)
-        colorSwitch();
-        await untilTransitionEnds(transitionBox);
-        console.log(3)
+        const transitionBox = document.querySelector('.transition');
+
+        setTimeout(() => {
+            transitionBox.classList.replace('red', 'blue');
+        });
     })();
 </script>
-<script id="transform">
-</script>
-<script id="animation">
-</script>
-</html>
